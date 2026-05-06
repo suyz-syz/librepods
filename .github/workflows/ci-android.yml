@@ -31,21 +31,26 @@ jobs:
         run: sdkmanager "ndk;30.0.14904198"
 
       # ==================== 关键修复 ====================
-      - name: Create local.properties with dummy signing
+      - name: Create local.properties (Debug friendly)
         run: |
           cat <<EOF > android/local.properties
           sdk.dir=/usr/local/lib/android/sdk
-          RELEASE_STORE_FILE=debug.keystore
+          RELEASE_STORE_FILE=/home/runner/.android/debug.keystore
           RELEASE_STORE_PASSWORD=android
           RELEASE_KEY_ALIAS=androiddebugkey
           RELEASE_KEY_PASSWORD=android
           EOF
 
+      - name: Create Android Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" -noprompt
+
       - name: Clean Project
         run: ./gradlew clean
         working-directory: android
 
-      - name: Build Debug APK (normal flavor)
+      - name: Build Normal Debug APK
         run: ./gradlew :app:assembleNormalDebug --stacktrace
         working-directory: android
 
