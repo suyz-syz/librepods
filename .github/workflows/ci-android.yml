@@ -31,24 +31,27 @@ jobs:
         run: sdkmanager "ndk;30.0.14904198"
 
       # ==================== 关键修复 ====================
-      - name: Create minimal local.properties
+      - name: Create local.properties with dummy signing
         run: |
           cat <<EOF > android/local.properties
-          # Minimal local.properties for Debug build
           sdk.dir=/usr/local/lib/android/sdk
+          RELEASE_STORE_FILE=debug.keystore
+          RELEASE_STORE_PASSWORD=android
+          RELEASE_KEY_ALIAS=androiddebugkey
+          RELEASE_KEY_PASSWORD=android
           EOF
 
       - name: Clean Project
         run: ./gradlew clean
         working-directory: android
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Debug APK (normal flavor)
+        run: ./gradlew :app:assembleNormalDebug --stacktrace
         working-directory: android
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: apk-debug
-          path: android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/normal/debug/*.apk
           if-no-files-found: error
