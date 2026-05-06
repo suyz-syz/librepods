@@ -50,7 +50,7 @@ jobs:
           RELEASE_KEY_PASSWORD=${{ secrets.RELEASE_KEY_PASSWORD }}
           EOF
       - name: Build
-        run: ./gradlew packageReleaseArtifacts
+        run: ./gradlew assembleDebug
         working-directory: android
       - name: Get app version
         id: version
