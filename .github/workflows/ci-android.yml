@@ -1,11 +1,6 @@
 name: Android CI
 
 on:
-  push:
-    branches: [ "*" ]
-    paths: [ 'android/**' ]
-  pull_request:
-    paths: [ 'android/**' ]
   workflow_dispatch:
 
 jobs:
@@ -23,6 +18,8 @@ jobs:
           java-version: 21
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -33,8 +30,20 @@ jobs:
       - name: Install NDK
         run: sdkmanager "ndk;30.0.14904198"
 
+      # ==================== 关键修复 ====================
+      - name: Create minimal local.properties
+        run: |
+          cat <<EOF > android/local.properties
+          # Minimal local.properties for Debug build
+          sdk.dir=/usr/local/lib/android/sdk
+          EOF
+
+      - name: Clean Project
+        run: ./gradlew clean
+        working-directory: android
+
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
         working-directory: android
 
       - name: Upload Debug APK
