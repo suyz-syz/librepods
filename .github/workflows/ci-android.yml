@@ -30,8 +30,7 @@ jobs:
       - name: Install NDK
         run: sdkmanager "ndk;30.0.14904198"
 
-      # ==================== 关键修复 ====================
-      - name: Create local.properties (Debug friendly)
+      - name: Create local.properties + Debug Keystore
         run: |
           cat <<EOF > android/local.properties
           sdk.dir=/usr/local/lib/android/sdk
@@ -41,17 +40,15 @@ jobs:
           RELEASE_KEY_PASSWORD=android
           EOF
 
-      - name: Create Android Debug Keystore
-        run: |
           mkdir -p ~/.android
           keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" -noprompt
 
-      - name: Clean Project
-        run: ./gradlew clean
+      - name: Clean everything
+        run: ./gradlew clean --recompile-scripts
         working-directory: android
 
-      - name: Build Normal Debug APK
-        run: ./gradlew :app:assembleNormalDebug --stacktrace
+      - name: Build Normal Debug
+        run: ./gradlew :app:assembleNormalDebug --stacktrace --info
         working-directory: android
 
       - name: Upload Debug APK
