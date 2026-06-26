@@ -47,13 +47,13 @@ jobs:
         run: ./gradlew clean
         working-directory: android
 
-      - name: Build Normal Debug APK
-        run: ./gradlew :app:assembleNormalDebug --stacktrace
+      - name: Build FOSS Debug APK
+        run: ./gradlew :app:assembleFossDebug --stacktrace
         working-directory: android
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: apk-debug
-          path: android/app/build/outputs/apk/normal/debug/*.apk
+          path: android/app/build/outputs/apk/foss/debug/*.apk
           if-no-files-found: error
