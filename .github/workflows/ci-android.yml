@@ -43,12 +43,12 @@ jobs:
           mkdir -p ~/.android
           keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" -noprompt
 
-      - name: Clean everything
-        run: ./gradlew clean --recompile-scripts
+      - name: Clean Project
+        run: ./gradlew clean
         working-directory: android
 
-      - name: Build Normal Debug
-        run: ./gradlew :app:assembleNormalDebug --stacktrace --info
+      - name: Build Normal Debug APK
+        run: ./gradlew :app:assembleNormalDebug --stacktrace
         working-directory: android
 
       - name: Upload Debug APK
